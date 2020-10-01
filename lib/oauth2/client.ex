@@ -54,6 +54,7 @@ defmodule OAuth2.Client do
           client_id: client_id,
           client_secret: client_secret,
           headers: headers,
+          omit_basic: any,
           params: params,
           redirect_uri: redirect_uri,
           ref: ref,
@@ -70,6 +71,7 @@ defmodule OAuth2.Client do
             client_id: "",
             client_secret: "",
             headers: [],
+            omit_basic: false,
             params: %{},
             redirect_uri: "",
             ref: nil,
@@ -91,6 +93,8 @@ defmodule OAuth2.Client do
   * `client_id` - the client_id for the OAuth2 provider
   * `client_secret` - the client_secret for the OAuth2 provider
   * `headers` - a list of request headers
+  * `omit_basic` - if true, do not include basic authorization header when
+    retrieving an access token given a validation code.
   * `params` - a map of request parameters
   * `redirect_uri` - the URI the provider should redirect to after authorization
      or token requests
@@ -367,6 +371,7 @@ defmodule OAuth2.Client do
   Adds `authorization` header for basic auth.
   """
   @spec basic_auth(t) :: t
+  def basic_auth(%OAuth2.Client{omit_basic: true} = client), do: client
   def basic_auth(%OAuth2.Client{client_id: id, client_secret: secret} = client) do
     put_header(client, "authorization", "Basic " <> client_auth(id, secret))
   end
