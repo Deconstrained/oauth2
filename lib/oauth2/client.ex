@@ -54,6 +54,7 @@ defmodule OAuth2.Client do
           client_id: client_id,
           client_secret: client_secret,
           headers: headers,
+          omit_param: any,
           params: params,
           redirect_uri: redirect_uri,
           ref: ref,
@@ -70,6 +71,7 @@ defmodule OAuth2.Client do
             client_id: "",
             client_secret: "",
             headers: [],
+            omit_param: false,
             params: %{},
             redirect_uri: "",
             ref: nil,
@@ -91,6 +93,8 @@ defmodule OAuth2.Client do
   * `client_id` - the client_id for the OAuth2 provider
   * `client_secret` - the client_secret for the OAuth2 provider
   * `headers` - a list of request headers
+  * `omit_param` - if true, do not include `client_id` in request parameters by
+    default
   * `params` - a map of request parameters
   * `redirect_uri` - the URI the provider should redirect to after authorization
      or token requests
@@ -143,6 +147,16 @@ defmodule OAuth2.Client do
   defp process_token(nil), do: nil
   defp process_token(val) when is_binary(val), do: AccessToken.new(val)
   defp process_token(%AccessToken{} = token), do: token
+
+  @doc """
+  Adds the client_id to the body of the request.
+  """
+  @spec add_client_id_param(t) :: t
+  def add_client_id_param(%Client{omit_param: true} = client), do: client
+  def add_client_id_param(%Client{params: params} = client) do
+    %{client | params: Map.put(params, "client_id", client.client_id)}
+  end
+
 
   @doc """
   Puts the specified `value` in the params for the given `key`.
