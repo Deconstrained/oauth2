@@ -1,4 +1,5 @@
 defmodule OAuth2.Client do
+  require Logger
   @moduledoc ~S"""
   This module defines the `OAuth2.Client` struct and is responsible for building
   and establishing a request for an access token.
@@ -273,6 +274,10 @@ defmodule OAuth2.Client do
           {:ok, Client.t()} | {:error, Response.t()} | {:error, Error.t()}
   def get_token(%{token_method: method} = client, params \\ [], headers \\ [], opts \\ []) do
     {client, url} = token_url(client, params, headers)
+    Logger.debug("OAuth2.Client.get_token:")
+    Logger.debug("client = "<>inspect(client, pretty: true))
+    Logger.debug("params = "<>inspect(client.params, pretty: true))
+    Logger.debug("headers = "<>inspect(client.headers, pretty: true))
 
     case Request.request(method, client, url, client.params, client.headers, opts) do
       {:ok, response} ->
